@@ -1,0 +1,27 @@
+[package]
+name = "sentinel-agent-content-scanner"
+version = "0.1.0"
+edition = "2021"
+authors = ["Sentinel Core Team"]
+description = "Content Scanner agent for Sentinel - malware scanning with ClamAV"
+license = "MIT"
+repository = "https://github.com/raskell-io/sentinel-agent-content-scanner"
+keywords = ["sentinel", "content-scanner", "malware", "clamav", "security"]
+categories = ["network-programming", "web-programming"]
+
+[dependencies]
+sentinel-agent-sdk = { git = "https://github.com/raskell-io/sentinel-agent-rust-sdk.git", branch = "main" }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time", "net", "io-util"] }
+async-trait = "0.1"
+serde = { version = "1", features = ["derive"] }
+serde_yaml = "0.9"
+base64 = "0.22"
+clap = { version = "4", features = ["derive"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+anyhow = "1"
+regex = "1"
+
+[dev-dependencies]
+tokio-test = "0.4"
+tempfile = "3"
