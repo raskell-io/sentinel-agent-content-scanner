@@ -271,13 +271,11 @@ pub fn matches_content_type(pattern: &str, content_type: &str) -> bool {
         .unwrap_or(content_type)
         .trim();
 
-    if pattern.ends_with("/*") {
+    if let Some(prefix) = pattern.strip_suffix("/*") {
         // Wildcard subtype: "application/*" matches "application/json"
-        let prefix = &pattern[..pattern.len() - 1];
         media_type.starts_with(prefix)
-    } else if pattern.ends_with('*') {
+    } else if let Some(prefix) = pattern.strip_suffix('*') {
         // Glob suffix: "application/vnd.*" matches "application/vnd.ms-excel"
-        let prefix = &pattern[..pattern.len() - 1];
         media_type.starts_with(prefix)
     } else {
         // Exact match
