@@ -1,16 +1,16 @@
 [package]
-name = "sentinel-agent-content-scanner"
+name = "zentinel-agent-content-scanner"
 version = "0.2.0"
 edition = "2021"
-authors = ["Sentinel Core Team"]
-description = "Content Scanner agent for Sentinel - malware scanning with ClamAV"
+authors = ["Zentinel Core Team"]
+description = "Content Scanner agent for Zentinel - malware scanning with ClamAV"
 license = "MIT"
-repository = "https://github.com/raskell-io/sentinel-agent-content-scanner"
-keywords = ["sentinel", "content-scanner", "malware", "clamav", "security"]
+repository = "https://github.com/zentinelproxy/zentinel-agent-content-scanner"
+keywords = ["zentinel", "content-scanner", "malware", "clamav", "security"]
 categories = ["network-programming", "web-programming"]
 
 [dependencies]
-sentinel-agent-protocol = "0.3"
+zentinel-agent-protocol = "0.3"
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time", "net", "io-util"] }
 async-trait = "0.1"
 serde = { version = "1", features = ["derive"] }

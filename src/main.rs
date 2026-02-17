@@ -4,15 +4,15 @@
 
 use anyhow::{Context, Result};
 use clap::Parser;
-use sentinel_agent_content_scanner::{Config, ContentScannerAgent};
-use sentinel_agent_protocol::v2::GrpcAgentServerV2;
+use zentinel_agent_content_scanner::{Config, ContentScannerAgent};
+use zentinel_agent_protocol::v2::GrpcAgentServerV2;
 use std::path::PathBuf;
 use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
-/// Content Scanner agent for Sentinel - malware scanning with ClamAV.
+/// Content Scanner agent for Zentinel - malware scanning with ClamAV.
 #[derive(Parser, Debug)]
-#[command(name = "sentinel-agent-content-scanner")]
+#[command(name = "zentinel-agent-content-scanner")]
 #[command(author, version, about, long_about = None)]
 struct Args {
     /// Path to configuration file.

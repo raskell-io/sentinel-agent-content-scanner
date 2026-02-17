@@ -3,11 +3,11 @@
 use crate::clamd::{ClamdClient, ScanResult};
 use crate::config::{Config, FailAction};
 use async_trait::async_trait;
-use sentinel_agent_protocol::v2::{
+use zentinel_agent_protocol::v2::{
     AgentCapabilities, AgentFeatures, AgentHandlerV2, AgentLimits, DrainReason,
     HealthStatus, MetricsReport, ShutdownReason,
 };
-use sentinel_agent_protocol::{
+use zentinel_agent_protocol::{
     AgentResponse, AuditMetadata, EventType, HeaderOp, RequestBodyChunkEvent, RequestHeadersEvent,
 };
 use std::collections::HashMap;
@@ -383,7 +383,7 @@ impl AgentHandlerV2 for ContentScannerAgent {
 
     /// Return metrics report.
     fn metrics_report(&self) -> Option<MetricsReport> {
-        use sentinel_agent_protocol::v2::{CounterMetric, GaugeMetric};
+        use zentinel_agent_protocol::v2::{CounterMetric, GaugeMetric};
 
         let mut report = MetricsReport::new("content-scanner", 10_000);
 
@@ -472,7 +472,7 @@ impl AgentHandlerV2 for ContentScannerAgent {
 mod tests {
     use super::*;
     use crate::config::{BodyConfig, ClamdConfig, Settings};
-    use sentinel_agent_protocol::Decision;
+    use zentinel_agent_protocol::Decision;
 
     fn create_test_config() -> Config {
         Config {

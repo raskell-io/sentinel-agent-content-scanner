@@ -1,6 +1,6 @@
 # Content Scanner Agent
 
-A Sentinel agent that scans uploaded files for malware using ClamAV daemon.
+A Zentinel agent that scans uploaded files for malware using ClamAV daemon.
 
 ## Features
 
@@ -70,16 +70,16 @@ scan_methods:
 
 ```bash
 # Run with default config
-./sentinel-agent-content-scanner -c config.yaml
+./zentinel-agent-content-scanner -c config.yaml
 
 # Run with custom socket path
-./sentinel-agent-content-scanner -c config.yaml -s /tmp/content-scanner.sock
+./zentinel-agent-content-scanner -c config.yaml -s /tmp/content-scanner.sock
 
 # Print example configuration
-./sentinel-agent-content-scanner --example-config
+./zentinel-agent-content-scanner --example-config
 
 # Validate configuration
-./sentinel-agent-content-scanner -c config.yaml --validate
+./zentinel-agent-content-scanner -c config.yaml --validate
 ```
 
 ## ClamAV Setup

@@ -1,4 +1,4 @@
-//! Content Scanner agent for Sentinel.
+//! Content Scanner agent for Zentinel.
 //!
 //! Scans uploaded files for malware using ClamAV daemon.
 
