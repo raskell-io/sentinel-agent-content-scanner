@@ -27,3 +27,7 @@ tonic = "0.12"
 [dev-dependencies]
 tokio-test = "0.4"
 tempfile = "3"
+
+[[bin]]
+name = "zentinel-content-scanner-agent"
+path = "src/main.rs"

@@ -13,7 +13,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  BINARY_NAME: zentinel-agent-content-scanner
+  BINARY_NAME: zentinel-content-scanner-agent
 
 jobs:
   build:

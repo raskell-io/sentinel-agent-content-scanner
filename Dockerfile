@@ -10,7 +10,7 @@
 ################################################################################
 FROM gcr.io/distroless/cc-debian12:nonroot AS prebuilt
 
-COPY zentinel-agent-content-scanner /zentinel-agent-content-scanner
+COPY zentinel-content-scanner-agent /zentinel-content-scanner-agent
 
 LABEL org.opencontainers.image.title="Zentinel Content Scanner Agent" \
       org.opencontainers.image.description="Zentinel Content Scanner Agent for Zentinel reverse proxy" \
@@ -22,4 +22,4 @@ ENV RUST_LOG=info,zentinel_agent_content_scanner=debug \
 
 USER nonroot:nonroot
 
-ENTRYPOINT ["/zentinel-agent-content-scanner"]
+ENTRYPOINT ["/zentinel-content-scanner-agent"]

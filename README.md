@@ -70,16 +70,16 @@ scan_methods:
 
 ```bash
 # Run with default config
-./zentinel-agent-content-scanner -c config.yaml
+./zentinel-content-scanner-agent -c config.yaml
 
 # Run with custom socket path
-./zentinel-agent-content-scanner -c config.yaml -s /tmp/content-scanner.sock
+./zentinel-content-scanner-agent -c config.yaml -s /tmp/content-scanner.sock
 
 # Print example configuration
-./zentinel-agent-content-scanner --example-config
+./zentinel-content-scanner-agent --example-config
 
 # Validate configuration
-./zentinel-agent-content-scanner -c config.yaml --validate
+./zentinel-content-scanner-agent -c config.yaml --validate
 ```
 
 ## ClamAV Setup
