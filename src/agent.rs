@@ -11,7 +11,7 @@ use zentinel_agent_protocol::{
     AgentResponse, AuditMetadata, EventType, HeaderOp, RequestBodyChunkEvent, RequestHeadersEvent,
 };
 use std::collections::HashMap;
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::Arc;
 use std::time::Instant;
 use tokio::sync::RwLock;
@@ -33,6 +33,8 @@ pub struct ContentScannerAgent {
     bytes_scanned: AtomicU64,
     /// Whether the agent is draining (not accepting new requests).
     draining: Arc<RwLock<bool>>,
+    /// Whether ClamAV was reachable on the last scan attempt.
+    clamd_reachable: AtomicBool,
 }
 
 /// Context for a request being scanned.
@@ -70,6 +72,7 @@ impl ContentScannerAgent {
             scan_errors: AtomicU64::new(0),
             bytes_scanned: AtomicU64::new(0),
             draining: Arc::new(RwLock::new(false)),
+            clamd_reachable: AtomicBool::new(true),
         }
     }
 
@@ -284,8 +287,12 @@ impl AgentHandlerV2 for ContentScannerAgent {
         // Scan with ClamAV
         let start = Instant::now();
         let result = match self.clamd.scan(&body).await {
-            Ok(r) => r,
+            Ok(r) => {
+                self.clamd_reachable.store(true, Ordering::Relaxed);
+                r
+            }
             Err(e) => {
+                self.clamd_reachable.store(false, Ordering::Relaxed);
                 warn!(
                     error = %e,
                     path = %ctx.path,
@@ -373,12 +380,13 @@ impl AgentHandlerV2 for ContentScannerAgent {
 
     /// Return current health status.
     fn health_status(&self) -> HealthStatus {
-        // Check if ClamAV is reachable
         let agent_id = "content-scanner".to_string();
 
-        // For now, return healthy - in production, you'd want to periodically
-        // check ClamAV connection and report degraded if unavailable
-        HealthStatus::healthy(agent_id)
+        if self.clamd_reachable.load(Ordering::Relaxed) {
+            HealthStatus::healthy(agent_id)
+        } else {
+            HealthStatus::degraded(agent_id, "ClamAV daemon unreachable".to_string())
+        }
     }
 
     /// Return metrics report.
@@ -430,12 +438,32 @@ impl AgentHandlerV2 for ContentScannerAgent {
             "Received configuration update"
         );
 
-        // Log the configuration for debugging
         debug!(config = %config, "Configuration payload");
 
-        // In a production implementation, you would parse and apply the new config
-        // For now, we accept all configurations
-        true
+        // Validate the incoming config by attempting to parse it
+        match serde_json::from_value::<Config>(config) {
+            Ok(new_config) => {
+                if let Err(e) = new_config.validate() {
+                    warn!(error = %e, "Configuration validation failed");
+                    return false;
+                }
+                info!(
+                    enabled = new_config.settings.enabled,
+                    fail_action = ?new_config.settings.fail_action,
+                    max_body_size = new_config.body.max_size,
+                    clamd_socket = %new_config.clamd.socket_path.display(),
+                    "Configuration accepted"
+                );
+                // Note: hot-reloading the active config requires refactoring
+                // config storage to Arc<RwLock<Config>>. For now, validate and
+                // acknowledge so the proxy knows the config is understood.
+                true
+            }
+            Err(e) => {
+                warn!(error = %e, "Failed to parse configuration");
+                false
+            }
+        }
     }
 
     /// Handle shutdown request.
