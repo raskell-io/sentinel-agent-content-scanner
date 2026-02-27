@@ -3,19 +3,19 @@
 use crate::clamd::{ClamdClient, ScanResult};
 use crate::config::{Config, FailAction};
 use async_trait::async_trait;
-use zentinel_agent_protocol::v2::{
-    AgentCapabilities, AgentFeatures, AgentHandlerV2, AgentLimits, DrainReason,
-    HealthStatus, MetricsReport, ShutdownReason,
-};
-use zentinel_agent_protocol::{
-    AgentResponse, AuditMetadata, EventType, HeaderOp, RequestBodyChunkEvent, RequestHeadersEvent,
-};
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::Arc;
 use std::time::Instant;
 use tokio::sync::RwLock;
 use tracing::{debug, info, warn};
+use zentinel_agent_protocol::v2::{
+    AgentCapabilities, AgentFeatures, AgentHandlerV2, AgentLimits, DrainReason, HealthStatus,
+    MetricsReport, ShutdownReason,
+};
+use zentinel_agent_protocol::{
+    AgentResponse, AuditMetadata, EventType, HeaderOp, RequestBodyChunkEvent, RequestHeadersEvent,
+};
 
 /// Content Scanner agent.
 pub struct ContentScannerAgent {
@@ -211,16 +211,18 @@ impl AgentHandlerV2 for ContentScannerAgent {
         let content_type = Self::get_header(&headers, "content-type").map(|s| s.to_string());
 
         // Check if content-type should be scanned
-        if !self.config.should_scan_content_type(content_type.as_deref()) {
+        if !self
+            .config
+            .should_scan_content_type(content_type.as_deref())
+        {
             debug!(
                 content_type = ?content_type,
                 "Content-Type not configured for scanning"
             );
-            return AgentResponse::default_allow()
-                .add_request_header(HeaderOp::Set {
-                    name: "x-scan-skipped".to_string(),
-                    value: "content-type-excluded".to_string(),
-                });
+            return AgentResponse::default_allow().add_request_header(HeaderOp::Set {
+                name: "x-scan-skipped".to_string(),
+                value: "content-type-excluded".to_string(),
+            });
         }
 
         // Store context for body phase
@@ -229,7 +231,8 @@ impl AgentHandlerV2 for ContentScannerAgent {
             path: path.to_string(),
             method: method.to_string(),
         };
-        self.store_context(&event.metadata.correlation_id, ctx).await;
+        self.store_context(&event.metadata.correlation_id, ctx)
+            .await;
 
         debug!(
             correlation_id = %event.metadata.correlation_id,
@@ -263,7 +266,8 @@ impl AgentHandlerV2 for ContentScannerAgent {
         };
 
         // Track bytes scanned
-        self.bytes_scanned.fetch_add(body.len() as u64, Ordering::Relaxed);
+        self.bytes_scanned
+            .fetch_add(body.len() as u64, Ordering::Relaxed);
 
         // Check body size
         if body.len() > self.config.body.max_size {
@@ -385,7 +389,7 @@ impl AgentHandlerV2 for ContentScannerAgent {
         if self.clamd_reachable.load(Ordering::Relaxed) {
             HealthStatus::healthy(agent_id)
         } else {
-            HealthStatus::degraded(agent_id, "ClamAV daemon unreachable".to_string())
+            HealthStatus::degraded(agent_id, vec!["clamav".to_string()], 2.0)
         }
     }
 
@@ -538,7 +542,10 @@ mod tests {
         );
 
         let flat = ContentScannerAgent::flatten_headers(&headers);
-        assert_eq!(flat.get("content-type"), Some(&"application/json".to_string()));
+        assert_eq!(
+            flat.get("content-type"),
+            Some(&"application/json".to_string())
+        );
         assert_eq!(flat.get("x-custom"), Some(&"value1".to_string()));
     }
 
@@ -555,10 +562,7 @@ mod tests {
             ContentScannerAgent::get_header(&headers, "Content-Type"),
             Some("application/json")
         );
-        assert_eq!(
-            ContentScannerAgent::get_header(&headers, "x-missing"),
-            None
-        );
+        assert_eq!(ContentScannerAgent::get_header(&headers, "x-missing"), None);
     }
 
     #[test]

@@ -4,11 +4,11 @@
 
 use anyhow::{Context, Result};
 use clap::Parser;
-use zentinel_agent_content_scanner::{Config, ContentScannerAgent};
-use zentinel_agent_protocol::v2::GrpcAgentServerV2;
 use std::path::PathBuf;
 use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
+use zentinel_agent_content_scanner::{Config, ContentScannerAgent};
+use zentinel_agent_protocol::v2::GrpcAgentServerV2;
 
 /// Content Scanner agent for Zentinel - malware scanning with ClamAV.
 #[derive(Parser, Debug)]

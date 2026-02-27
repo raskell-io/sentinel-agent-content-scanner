@@ -14,7 +14,29 @@ A Zentinel agent that scans uploaded files for malware using ClamAV daemon.
 
 ## Installation
 
+### Using Bundle (Recommended)
+
 ```bash
+# Install just this agent
+zentinel bundle install content-scanner
+
+# Or install all bundled agents
+zentinel bundle install
+```
+
+The bundle command downloads the correct binary for your platform and places it in the standard location. See the [bundle documentation](https://zentinelproxy.io/docs/deployment/bundle/) for details.
+
+### Using Cargo
+
+```bash
+cargo install zentinel-agent-content-scanner
+```
+
+### From Source
+
+```bash
+git clone https://github.com/zentinelproxy/zentinel-agent-content-scanner
+cd zentinel-agent-content-scanner
 cargo build --release
 ```
 

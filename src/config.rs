@@ -173,9 +173,9 @@ impl Config {
 
     /// Check if a path should be skipped.
     pub fn should_skip_path(&self, path: &str) -> bool {
-        self.skip_paths.iter().any(|skip| {
-            path == skip || path.starts_with(&format!("{}/", skip))
-        })
+        self.skip_paths
+            .iter()
+            .any(|skip| path == skip || path.starts_with(&format!("{}/", skip)))
     }
 
     /// Check if a method should be scanned.
@@ -321,7 +321,10 @@ mod tests {
     fn test_default_clamd_config() {
         let clamd = ClamdConfig::default();
         assert!(clamd.enabled);
-        assert_eq!(clamd.socket_path, PathBuf::from("/var/run/clamav/clamd.ctl"));
+        assert_eq!(
+            clamd.socket_path,
+            PathBuf::from("/var/run/clamav/clamd.ctl")
+        );
         assert_eq!(clamd.timeout_ms, 30000);
         assert_eq!(clamd.chunk_size, 65536);
     }
@@ -329,22 +332,37 @@ mod tests {
     #[test]
     fn test_matches_content_type_exact() {
         assert!(matches_content_type("application/json", "application/json"));
-        assert!(matches_content_type("application/json", "application/json; charset=utf-8"));
+        assert!(matches_content_type(
+            "application/json",
+            "application/json; charset=utf-8"
+        ));
         assert!(!matches_content_type("application/json", "application/xml"));
     }
 
     #[test]
     fn test_matches_content_type_wildcard() {
         assert!(matches_content_type("application/*", "application/json"));
-        assert!(matches_content_type("application/*", "application/octet-stream"));
+        assert!(matches_content_type(
+            "application/*",
+            "application/octet-stream"
+        ));
         assert!(!matches_content_type("application/*", "text/html"));
     }
 
     #[test]
     fn test_matches_content_type_glob() {
-        assert!(matches_content_type("application/vnd.*", "application/vnd.ms-excel"));
-        assert!(matches_content_type("application/vnd.*", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-        assert!(!matches_content_type("application/vnd.*", "application/json"));
+        assert!(matches_content_type(
+            "application/vnd.*",
+            "application/vnd.ms-excel"
+        ));
+        assert!(matches_content_type(
+            "application/vnd.*",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        ));
+        assert!(!matches_content_type(
+            "application/vnd.*",
+            "application/json"
+        ));
     }
 
     #[test]

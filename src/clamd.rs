@@ -289,12 +289,11 @@ mod tests {
 
     #[test]
     fn test_clamd_client_new() {
-        let client = ClamdClient::new(
-            PathBuf::from("/var/run/clamav/clamd.ctl"),
-            30000,
-            65536,
+        let client = ClamdClient::new(PathBuf::from("/var/run/clamav/clamd.ctl"), 30000, 65536);
+        assert_eq!(
+            client.socket_path,
+            PathBuf::from("/var/run/clamav/clamd.ctl")
         );
-        assert_eq!(client.socket_path, PathBuf::from("/var/run/clamav/clamd.ctl"));
         assert_eq!(client.timeout, Duration::from_millis(30000));
         assert_eq!(client.chunk_size, 65536);
     }
