@@ -22,7 +22,7 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 anyhow = "1"
 regex = "1"
-tonic = "0.12"
+tonic = "0.14"
 
 [dev-dependencies]
 tokio-test = "0.4"
